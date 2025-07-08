@@ -2,50 +2,144 @@
 <html lang="zh-CN">
 <head>
   <meta charset="UTF-8" />
-  <title>视频下载工具</title>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>JoyDownload - 卡通视频下载</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
   <style>
-    body { font-family: sans-serif; padding: 20px; }
-    input, select, button { padding: 8px; font-size: 16px; margin: 4px; }
-    #result { margin-top: 20px; font-size: 18px; color: red; }
+    * {
+      box-sizing: border-box;
+      font-family: 'Fredoka', sans-serif;
+    }
+
+    body {
+      background: linear-gradient(to bottom, #ffecd2 0%, #fcb69f 100%);
+      margin: 0;
+      padding: 0;
+      display: flex;
+      justify-content: center;
+      align-items: flex-start;
+      min-height: 100vh;
+    }
+
+    .container {
+      background: #fff8ee;
+      margin-top: 40px;
+      padding: 30px 40px;
+      border-radius: 20px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      max-width: 600px;
+      width: 100%;
+    }
+
+    h1 {
+      font-size: 28px;
+      color: #ff7b54;
+      text-align: center;
+      margin-bottom: 20px;
+    }
+
+    label {
+      display: block;
+      margin-bottom: 10px;
+      color: #444;
+      font-size: 16px;
+    }
+
+    input, select {
+      width: 100%;
+      padding: 12px;
+      border-radius: 12px;
+      border: 2px solid #ffb085;
+      font-size: 16px;
+      margin-bottom: 20px;
+    }
+
+    button {
+      background-color: #ffa500;
+      color: white;
+      border: none;
+      padding: 14px;
+      width: 100%;
+      border-radius: 14px;
+      font-size: 16px;
+      cursor: pointer;
+      transition: background 0.3s ease;
+    }
+
+    button:hover {
+      background-color: #ff8800;
+    }
+
+    .result {
+      margin-top: 20px;
+      font-size: 16px;
+      color: #333;
+      text-align: center;
+    }
+
+    .emoji {
+      font-size: 32px;
+      margin-bottom: 8px;
+    }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 30px;
+      color: #777;
+    }
   </style>
 </head>
 <body>
-  <h2>🎬 输入视频链接：</h2>
-  <input id="url" placeholder="https://www.youtube.com/watch?v=..." size="60" />
-  <select id="format">
-    <option value="best">最佳质量</option>
-    <option value="worst">最低质量</option>
-    <option value="bestaudio">仅音频</option>
-    <option value="bestvideo">仅视频</option>
-  </select>
-  <button id="btn">获取下载链接</button>
+  <div class="container">
+    <h1>🎬 JoyDownload</h1>
+    <label for="url">输入 YouTube 链接：</label>
+    <input type="text" id="url" placeholder="例如：https://www.youtube.com/watch?v=xxx" />
 
-  <div id="result"></div>
+    <label for="format">选择下载格式：</label>
+    <select id="format">
+      <option value="best">最佳画质</option>
+      <option value="mp3">仅音频（MP3）</option>
+      <option value="360p">流畅画质（360p）</option>
+      <option value="720p">高清画质（720p）</option>
+    </select>
+
+    <button id="btn">获取并下载</button>
+
+    <div class="result" id="result"></div>
+  </div>
+
+  <footer>🐱 JoyDownload - 免费视频下载工具</footer>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
-      const url = document.getElementById("url").value.trim();
+      const url = document.getElementById("url").value;
       const format = document.getElementById("format").value;
       const result = document.getElementById("result");
 
-      if (!url) {
-        result.innerHTML = "⚠️ 请输入视频链接";
+      if (!url.trim()) {
+        result.innerHTML = "⚠️ 请输入有效的链接。";
         return;
       }
 
-      result.innerHTML = "⌛ 正在获取下载链接...";
+      result.innerHTML = "⏳ 正在处理中，请稍候...";
 
       try {
-        const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${format}`);
+        const res = await fetch("/api/download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, format })
+        });
         const data = await res.json();
 
         if (data.links && data.links.length > 0) {
-          window.location.href = data.links[0]; // 自动跳转下载
+          window.location.href = data.links[0]; // 自动触发下载
         } else {
-          result.innerHTML = "⚠️ 没有找到有效的下载链接";
+          result.innerHTML = "❌ 没有找到可用下载链接。";
         }
       } catch (err) {
-        result.innerHTML = "❌ 下载失败（服务器返回错误）";
+        result.innerHTML = "🚫 出错了，下载失败。";
       }
     });
   </script>
