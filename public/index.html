@@ -4,82 +4,66 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JoyDownload - 视频下载器</title>
-  <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
   <style>
     * {
+      font-family: 'Arial', sans-serif;
       box-sizing: border-box;
-      font-family: 'Fredoka', sans-serif;
     }
-
     body {
       background: linear-gradient(to bottom, #ffe0cc, #ffcab3);
-      margin: 0;
-      padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: center;
-      min-height: 100vh;
       flex-direction: column;
+      align-items: center;
+      justify-content: center;
+      min-height: 100vh;
+      margin: 0;
     }
-
     .container {
       background: #fff7ee;
       padding: 30px;
-      border-radius: 20px;
-      box-shadow: 0 10px 20px rgba(0,0,0,0.15);
+      border-radius: 16px;
+      box-shadow: 0 10px 20px rgba(0,0,0,0.1);
       width: 90%;
-      max-width: 600px;
+      max-width: 500px;
     }
-
     h1 {
       text-align: center;
       color: #ff6b51;
     }
-
-    input, select {
+    input, select, button {
       width: 100%;
       padding: 12px;
-      margin: 12px 0;
+      margin-top: 12px;
       font-size: 16px;
-      border: 2px solid #ffb085;
       border-radius: 10px;
-      background: #d8f6d8;
+      border: 2px solid #ffb085;
     }
-
     button {
-      width: 100%;
-      background: orange;
+      background-color: orange;
       color: white;
       border: none;
-      padding: 14px;
-      font-size: 16px;
-      border-radius: 12px;
-      cursor: pointer;
+      margin-top: 16px;
     }
-
     button:hover {
-      background: #ff9500;
+      background-color: #ff9500;
     }
-
     .result {
+      text-align: center;
       margin-top: 20px;
-      text-align: center;
       color: #444;
-      font-size: 15px;
     }
-
     footer {
-      margin-top: 30px;
       text-align: center;
-      color: #777;
+      margin-top: 30px;
       font-size: 14px;
+      color: #777;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎬 JoyDownload</h1>
-    <input type="text" id="url" placeholder="输入 YouTube 视频链接，例如 https://www.youtube.com/watch?v=xxx">
+    <input id="url" type="text" placeholder="输入 YouTube 视频链接">
     <select id="format">
       <option value="best">最佳画质</option>
       <option value="mp3">仅音频（MP3）</option>
@@ -91,22 +75,20 @@
     <button onclick="download()">获取并下载</button>
     <div class="result" id="result"></div>
   </div>
-
   <footer>🐱 JoyDownload - 免费视频下载工具</footer>
 
   <script>
     async function download() {
-      const url = document.getElementById("url").value.trim();
+      const url = document.getElementById("url").value;
       const format = document.getElementById("format").value;
       const result = document.getElementById("result");
 
-      if (!url) {
-        result.innerText = "❗请输入有效的链接";
+      if (!url.trim()) {
+        result.innerText = "❗ 请输入链接";
         return;
       }
 
       result.innerText = "⏳ 正在获取，请稍候...";
-
       try {
         const res = await fetch("/api/download", {
           method: "POST",
@@ -115,14 +97,13 @@
         });
 
         const data = await res.json();
-
         if (data.links && data.links.length > 0) {
-          window.location.href = data.links[0]; // 自动跳转下载
+          window.location.href = data.links[0];
         } else {
-          result.innerText = "❌ 没有找到可用下载链接。";
+          result.innerText = "❌ 没有找到可用链接。";
         }
-      } catch (err) {
-        result.innerText = "🚫 下载失败，请重试。";
+      } catch (e) {
+        result.innerText = "🚫 下载失败，请重试";
       }
     }
   </script>
