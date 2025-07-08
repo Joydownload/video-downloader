@@ -1,49 +1,44 @@
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
+const path = require("path");
 
 const app = express();
 const port = process.env.PORT || 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public"));
+app.use(express.static(path.join(__dirname, "public")));
 
 app.post("/api/download", (req, res) => {
   const { url, format } = req.body;
-
   if (!url) {
-    return res.status(400).json({ error: "缺少 URL 参数" });
+    return res.status(400).json({ error: "缺少视频链接" });
   }
 
-  console.log("📥 收到请求：", url, format);
+  const qualityMap = {
+    mp3: "bestaudio",
+    "360p": "18",
+    "720p": "22",
+    "1080p": "137+140",
+    "2160p": "313+140",
+    best: "best"
+  };
 
-  let formatCode = "best";
-
-  // 转换常见的画质格式为 yt-dlp 可识别的格式代码
-  if (format === "mp3") formatCode = "bestaudio";
-  else if (format === "360p") formatCode = "18";
-  else if (format === "720p") formatCode = "22";
-  else if (format === "1080p") formatCode = "137+140";
-  else if (format === "2160p") formatCode = "313+140";
-
-  const command = `yt-dlp -f ${formatCode} -g "${url}"`;
+  const selectedFormat = qualityMap[format] || "best";
+  const command = `yt-dlp -f ${selectedFormat} -g "${url}"`;
 
   exec(command, (err, stdout, stderr) => {
     if (err) {
-      console.error("❌ yt-dlp 错误：", stderr);
-      return res.status(500).json({ error: "下载失败，请检查链接或格式" });
+      console.error("❌ 下载出错：", stderr);
+      return res.status(500).json({ error: "无法获取下载链接。" });
     }
 
-    const links = stdout.trim().split("\n").filter(line => line.startsWith("http"));
-    if (links.length === 0) {
-      return res.status(404).json({ error: "没有找到可用下载链接。" });
-    }
-
+    const links = stdout.trim().split("\n").filter(l => l.startsWith("http"));
     res.json({ links });
   });
 });
 
 app.listen(port, () => {
-  console.log(`✅ Server running on http://localhost:${port}`);
+  console.log(`✅ Server running at http://localhost:${port}`);
 });
