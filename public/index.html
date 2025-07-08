@@ -90,7 +90,7 @@
 
       result.innerText = "⏳ 正在获取，请稍候...";
       try {
-        const res = await fetch("/api/download", {
+        const res = await fetch("https://09efaa799cff.ngrok-free.app/api/download", {
           method: "POST",
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url, format })

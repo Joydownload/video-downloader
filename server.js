@@ -1,33 +1,16 @@
 const express = require("express");
 const cors = require("cors");
 const { exec } = require("child_process");
-const fs = require("fs");
-const path = require("path");
 
 const app = express();
-const port = process.env.PORT || 3000;
+const port = 3000;
 
 app.use(cors());
 app.use(express.json());
-app.use(express.static("public")); // 提供 index.html 静态页面
 
-// 自动下载 yt-dlp（如果不存在）
-const ytdlpPath = path.join(__dirname, "yt-dlp");
-if (!fs.existsSync(ytdlpPath)) {
-  console.log("📥 正在下载 yt-dlp...");
-  exec(
-    "curl -L https://github.com/yt-dlp/yt-dlp/releases/latest/download/yt-dlp -o yt-dlp && chmod +x yt-dlp",
-    (error) => {
-      if (error) console.error("❌ yt-dlp 下载失败：", error);
-      else console.log("✅ yt-dlp 下载完成");
-    }
-  );
-}
-
-// ✅ 正确的 API 接口写法（之前的错误就是这里！）
 app.post("/api/download", (req, res) => {
   const { url, format } = req.body;
-  if (!url) return res.status(400).json({ error: "缺少 URL 参数" });
+  if (!url) return res.status(400).json({ error: "缺少视频链接" });
 
   const qualityMap = {
     best: "best",
@@ -39,14 +22,12 @@ app.post("/api/download", (req, res) => {
   };
 
   const formatCode = qualityMap[format] || "best";
-  const command = `./yt-dlp -f "${formatCode}" -g "${url}"`;
-
-  console.log("📥 正在获取链接：", url);
+  const command = `yt-dlp -f "${formatCode}" -g "${url}"`;
 
   exec(command, (err, stdout, stderr) => {
     if (err) {
-      console.error("❌ yt-dlp 执行失败：", stderr);
-      return res.status(500).json({ error: "下载失败，请检查链接或格式。" });
+      console.error("❌ 下载失败：", stderr);
+      return res.status(500).json({ error: "解析失败" });
     }
     const links = stdout.trim().split("\n").filter(line => line.startsWith("http"));
     res.json({ links });
@@ -54,5 +35,5 @@ app.post("/api/download", (req, res) => {
 });
 
 app.listen(port, () => {
-  console.log(`✅ Server running at http://localhost:${port}`);
+  console.log(`✅ 本地后端启动成功：http://localhost:${port}`);
 });
