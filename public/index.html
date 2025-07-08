@@ -17,21 +17,14 @@
       margin: 0;
       padding: 0;
       display: flex;
-      flex-direction: column;
-      align-items: center;
+      justify-content: center;
+      align-items: flex-start;
       min-height: 100vh;
-    }
-
-    .header {
-      text-align: center;
-      padding: 16px 0 0;
-      font-size: 14px;
-      color: #444;
     }
 
     .container {
       background: #fff8ee;
-      margin-top: 20px;
+      margin-top: 40px;
       padding: 30px 40px;
       border-radius: 20px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
@@ -40,10 +33,10 @@
     }
 
     h1 {
-      font-size: 28px;
+      font-size: 30px;
       color: #ff7b54;
       text-align: center;
-      margin-bottom: 20px;
+      margin-bottom: 25px;
     }
 
     label {
@@ -60,6 +53,7 @@
       border: 2px solid #ffb085;
       font-size: 16px;
       margin-bottom: 20px;
+      background-color: #d4f3d4;
     }
 
     button {
@@ -84,13 +78,16 @@
       color: #333;
       text-align: center;
     }
+
+    footer {
+      text-align: center;
+      font-size: 13px;
+      margin-top: 30px;
+      color: #777;
+    }
   </style>
 </head>
 <body>
-  <div class="header">
-    🐱 <strong>JoyDownload</strong> - 免费视频下载工具
-  </div>
-
   <div class="container">
     <h1>🎬 JoyDownload</h1>
 
@@ -101,14 +98,21 @@
     <select id="format">
       <option value="best">最佳画质</option>
       <option value="mp3">仅音频（MP3）</option>
+      <option value="m4a">仅音频（M4A）</option>
+      <option value="webm">仅音频（WEBM）</option>
       <option value="360p">流畅画质（360p）</option>
+      <option value="480p">标清画质（480p）</option>
       <option value="720p">高清画质（720p）</option>
+      <option value="1080p">全高清（1080p）</option>
+      <option value="1440p">2K 超清（1440p）</option>
+      <option value="2160p">4K 超清（2160p）</option>
     </select>
 
     <button id="btn">获取并下载</button>
-
     <div class="result" id="result"></div>
   </div>
+
+  <footer>🐱 JoyDownload - 免费视频下载工具</footer>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
@@ -132,7 +136,7 @@
         const data = await res.json();
 
         if (data.links && data.links.length > 0) {
-          window.location.href = data.links[0]; // 自动触发下载
+          window.location.href = data.links[0];
         } else {
           result.innerHTML = "❌ 没有找到可用下载链接。";
         }
