@@ -21,7 +21,44 @@ if (!fs.existsSync(ytdlpPath)) {
   });
 }
 
-app.post("/api/download", (req, res) => {
+app.post("app.post("/api/download", (req, res) => {
+  const { url, format } = req.body;
+
+  console.log("📥 收到请求：", url, format);
+
+  if (!url) {
+    console.log("⚠️ 缺少 URL 参数");
+    return res.status(400).json({ error: "缺少 URL 参数" });
+  }
+
+  const qualityMap = {
+    best: "best",
+    mp3: "bestaudio",
+    "360p": "18",
+    "720p": "22",
+    "1080p": "137+140",
+    "2160p": "313+140"
+  };
+
+  const formatCode = qualityMap[format] || "best";
+  const command = `./yt-dlp -f "${formatCode}" -g "${url}"`;
+
+  console.log("🛠 执行命令：", command);
+
+  exec(command, (err, stdout, stderr) => {
+    if (err) {
+      console.error("❌ yt-dlp 执行失败");
+      console.error("📄 stderr 输出：", stderr);
+      return res.status(500).json({ error: "下载失败，请检查链接或格式。" });
+    }
+
+    const links = stdout.trim().split("\n").filter(line => line.startsWith("http"));
+    console.log("🔗 获取到链接：", links);
+    res.json({ links });
+  });
+});
+
+", (req, res) => {
   const { url, format } = req.body;
   if (!url) return res.status(400).json({ error: "缺少 URL 参数" });
 
