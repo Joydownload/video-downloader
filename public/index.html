@@ -16,19 +16,19 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
     }
 
     .container {
       background: #fff8ee;
-      margin-top: 40px;
+      margin-top: 50px;
       padding: 30px 40px;
       border-radius: 20px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
       max-width: 600px;
-      width: 100%;
+      width: 90%;
     }
 
     h1 {
@@ -52,7 +52,7 @@
       border: 2px solid #ffb085;
       font-size: 16px;
       margin-bottom: 20px;
-      background-color: #d0f5d5;
+      background: #d2f5d8;
     }
 
     button {
@@ -81,18 +81,18 @@
     footer {
       text-align: center;
       font-size: 13px;
-      margin-top: 30px;
       color: #777;
-      width: 100%;
+      margin-top: 30px;
+      margin-bottom: 20px;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎬 JoyDownload</h1>
-
+    
     <label for="url">输入 YouTube 链接：</label>
-    <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=xxx" />
+    <input type="text" id="url" placeholder="例如：https://www.youtube.com/watch?v=xxx" />
 
     <label for="format">选择下载格式：</label>
     <select id="format">
@@ -105,7 +105,6 @@
     </select>
 
     <button id="btn">获取并下载</button>
-
     <div class="result" id="result"></div>
   </div>
 
@@ -113,11 +112,11 @@
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
-      const url = document.getElementById("url").value;
+      const url = document.getElementById("url").value.trim();
       const format = document.getElementById("format").value;
       const result = document.getElementById("result");
 
-      if (!url.trim()) {
+      if (!url) {
         result.innerHTML = "⚠️ 请输入有效的链接。";
         return;
       }
@@ -130,10 +129,10 @@
           headers: { "Content-Type": "application/json" },
           body: JSON.stringify({ url, format })
         });
-        const data = await res.json();
 
+        const data = await res.json();
         if (data.links && data.links.length > 0) {
-          window.location.href = data.links[0];
+          window.location.href = data.links[0]; // 自动下载
         } else {
           result.innerHTML = "❌ 没有找到可用下载链接。";
         }
