@@ -17,14 +17,21 @@
       margin: 0;
       padding: 0;
       display: flex;
-      justify-content: center;
-      align-items: flex-start;
+      flex-direction: column;
+      align-items: center;
       min-height: 100vh;
+    }
+
+    .header {
+      text-align: center;
+      padding: 16px 0 0;
+      font-size: 14px;
+      color: #444;
     }
 
     .container {
       background: #fff8ee;
-      margin-top: 40px;
+      margin-top: 20px;
       padding: 30px 40px;
       border-radius: 20px;
       box-shadow: 0 10px 20px rgba(0,0,0,0.15);
@@ -77,23 +84,16 @@
       color: #333;
       text-align: center;
     }
-
-    .emoji {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
-    footer {
-      text-align: center;
-      font-size: 13px;
-      margin-top: 30px;
-      color: #777;
-    }
   </style>
 </head>
 <body>
+  <div class="header">
+    🐱 <strong>JoyDownload</strong> - 免费视频下载工具
+  </div>
+
   <div class="container">
     <h1>🎬 JoyDownload</h1>
+
     <label for="url">输入 YouTube 链接：</label>
     <input type="text" id="url" placeholder="例如：https://www.youtube.com/watch?v=xxx" />
 
@@ -109,8 +109,6 @@
 
     <div class="result" id="result"></div>
   </div>
-
-  <footer>🐱 JoyDownload - 免费视频下载工具</footer>
 
   <script>
     document.getElementById("btn").addEventListener("click", async () => {
@@ -145,3 +143,4 @@
   </script>
 </body>
 </html>
+
