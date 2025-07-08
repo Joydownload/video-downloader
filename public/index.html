@@ -4,7 +4,6 @@
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <title>JoyDownload - 视频下载器</title>
-  <link rel="preconnect" href="https://fonts.googleapis.com">
   <link href="https://fonts.googleapis.com/css2?family=Fredoka:wght@500&display=swap" rel="stylesheet">
   <style>
     * {
@@ -53,7 +52,7 @@
       border: 2px solid #ffb085;
       font-size: 16px;
       margin-bottom: 20px;
-      background-color: #d2f5d7;
+      background-color: #d0f5d5;
     }
 
     button {
@@ -79,24 +78,21 @@
       text-align: center;
     }
 
-    .emoji {
-      font-size: 32px;
-      margin-bottom: 8px;
-    }
-
     footer {
       text-align: center;
       font-size: 13px;
       margin-top: 30px;
       color: #777;
+      width: 100%;
     }
   </style>
 </head>
 <body>
   <div class="container">
     <h1>🎬 JoyDownload</h1>
+
     <label for="url">输入 YouTube 链接：</label>
-    <input type="text" id="url" placeholder="例如：https://www.youtube.com/watch?v=xxx" />
+    <input type="text" id="url" placeholder="https://www.youtube.com/watch?v=xxx" />
 
     <label for="format">选择下载格式：</label>
     <select id="format">
@@ -105,7 +101,6 @@
       <option value="360p">流畅画质（360p）</option>
       <option value="720p">高清画质（720p）</option>
       <option value="1080p">全高清（1080p）</option>
-      <option value="1440p">2K 高清（1440p）</option>
       <option value="2160p">4K 超清（2160p）</option>
     </select>
 
@@ -117,8 +112,6 @@
   <footer>🐱 JoyDownload - 免费视频下载工具</footer>
 
   <script>
-    const backendURL = "https://fa350a5375a5.ngrok-free.app";
-
     document.getElementById("btn").addEventListener("click", async () => {
       const url = document.getElementById("url").value;
       const format = document.getElementById("format").value;
@@ -132,11 +125,15 @@
       result.innerHTML = "⏳ 正在处理中，请稍候...";
 
       try {
-        const res = await fetch(`${backendURL}/api/download?url=${encodeURIComponent(url)}&format=${format}`);
+        const res = await fetch("/api/download", {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          body: JSON.stringify({ url, format })
+        });
         const data = await res.json();
 
         if (data.links && data.links.length > 0) {
-          window.location.href = data.links[0]; // 自动跳转下载
+          window.location.href = data.links[0];
         } else {
           result.innerHTML = "❌ 没有找到可用下载链接。";
         }
