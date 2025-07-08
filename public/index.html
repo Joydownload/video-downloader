@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+  <meta charset="UTF-8" />
+  <title>视频下载工具</title>
+  <style>
+    body { font-family: sans-serif; padding: 20px; }
+    input, select, button { padding: 8px; font-size: 16px; margin: 4px; }
+    #result { margin-top: 20px; font-size: 18px; color: red; }
+  </style>
+</head>
+<body>
+  <h2>🎬 输入视频链接：</h2>
+  <input id="url" placeholder="https://www.youtube.com/watch?v=..." size="60" />
+  <select id="format">
+    <option value="best">最佳质量</option>
+    <option value="worst">最低质量</option>
+    <option value="bestaudio">仅音频</option>
+    <option value="bestvideo">仅视频</option>
+  </select>
+  <button id="btn">获取下载链接</button>
+
+  <div id="result"></div>
+
+  <script>
+    document.getElementById("btn").addEventListener("click", async () => {
+      const url = document.getElementById("url").value.trim();
+      const format = document.getElementById("format").value;
+      const result = document.getElementById("result");
+
+      if (!url) {
+        result.innerHTML = "⚠️ 请输入视频链接";
+        return;
+      }
+
+      result.innerHTML = "⌛ 正在获取下载链接...";
+
+      try {
+        const res = await fetch(`/api/download?url=${encodeURIComponent(url)}&format=${format}`);
+        const data = await res.json();
+
+        if (data.links && data.links.length > 0) {
+          window.location.href = data.links[0]; // 自动跳转下载
+        } else {
+          result.innerHTML = "⚠️ 没有找到有效的下载链接";
+        }
+      } catch (err) {
+        result.innerHTML = "❌ 下载失败（服务器返回错误）";
+      }
+    });
+  </script>
+</body>
+</html>
